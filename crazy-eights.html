@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crazy Eights</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to left, #134E5E, #71B280);
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    h1 {
+      color: #FFD700;
+    }
+    .game-info {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+    .discard-card {
+      border: 3px solid white;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+    .turn {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .player-hand,
+    .computer-hand {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    /* Card styling: bigger size, white background, suit/value layout */
+    .card {
+      position: relative;
+      width: 120px;
+      height: 160px;
+      background: #fff;
+      color: black;
+      border: 3px solid white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    /* Top-left corner value */
+    .card-value.top-left {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-size: 14px;
+    }
+    /* Bottom-right corner value */
+    .card-value.bottom-right {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      font-size: 14px;
+    }
+    /* Center suit symbol */
+    .card-suit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 26px;
+    }
+    /* Make Hearts (♥) and Diamonds (♦) text red */
+    .hearts .card-value,
+    .hearts .card-suit,
+    .diamonds .card-value,
+    .diamonds .card-suit {
+      color: red !important;
+    }
+    /* Slightly smaller computer card images */
+    .computer-card img {
+      width: 100px;
+      height: 140px;
+      border-radius: 10px;
+    }
+    .draw-btn {
+      padding: 10px 20px;
+      background: #1E90FF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+    .pause-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #FF4500;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .pause-menu {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1E1E1E;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+    .pause-menu button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .resume-btn {
+      background: #00FF00;
+      color: black;
+    }
+    .quit-btn {
+      background: #FF4500;
+      color: white;
+    }
+    .new-game-btn {
+      background: #FFD700;
+      color: black;
+    }
+    /* Suit selection overlay */
+    #suit-selection {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1E1E1E;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      text-align: center;
+      z-index: 1000;
+    }
+    #suit-selection h3 {
+      margin-bottom: 15px;
+    }
+    #suit-selection button {
+      background: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 24px;
+      margin: 0 10px;
+      cursor: pointer;
+      width: 60px;
+      height: 60px;
+    }
+    /* Styling for red suits */
+    .red-suit {
+      color: red;
+    }
+    /* Error message styling */
+    #error-message {
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      font-size: 18px;
+      color: red;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <button class="pause-btn" onclick="togglePause()">⏸ Pause</button>
+  <div class="pause-menu" id="pause-menu">
+    <h2>Game Paused</h2>
+    <button class="resume-btn" onclick="resumeGame()">▶ Resume Game</button>
+    <button class="new-game-btn" onclick="startNewGame()">🔄 New Game</button>
+    <button class="quit-btn" onclick="quitGame()">🚪 Quit Game</button>
+  </div>
+
+  <h1>Crazy Eights</h1>
+  <!-- Discard card -->
+  <div class="discard-card" id="discard-card"></div>
+  <p class="game-info">
+    Current Suit: <span class="current-suit"></span>
+  </p>
+  <p class="turn"></p>
+
+  <div class="computer-hand" id="computer-hand"></div>
+  <div class="player-hand" id="player-hand"></div>
+
+  <button class="draw-btn" onclick="drawCard()">Draw Card</button>
+
+  <!-- Suit selection overlay for when an 8 is played -->
+  <div id="suit-selection">
+    <h3>Select a Suit</h3>
+    <div>
+      <button onclick="selectSuit('hearts')" class="red-suit">♥</button>
+      <button onclick="selectSuit('diamonds')" class="red-suit">♦</button>
+      <button onclick="selectSuit('clubs')">♣</button>
+      <button onclick="selectSuit('spades')">♠</button>
+    </div>
+  </div>
+  
+  <!-- Error message element -->
+  <div id="error-message"></div>
+
+  <script>
+    const SUITS = ["hearts", "diamonds", "clubs", "spades"];
+    const VALUES = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+
+    // Card class for individual card instances.
+    class Card {
+  static suitOrder = { clubs: 0, diamonds: 1, hearts: 2, spades: 3 };
+  static rankOrder = {
+    "2": 0, "3": 1, "4": 2, "5": 3, "6": 4, "7": 5,
+    "8": 6, "9": 7, "10": 8, "J": 9, "Q": 10, "K": 11, "A": 12
+  };
+
+  constructor(value, suit) {
+    this.value = value;
+    this.suit = suit;
+  }
+
+  getSuitSymbol() {
+    switch (this.suit) {
+      case "hearts":   return "♥";
+      case "diamonds": return "♦";
+      case "clubs":    return "♣";
+      case "spades":   return "♠";
+      default:         return "";
+    }
+  }
+}
+
+
+    // Cards class to manage a collection of Card instances.
+    class Cards {
+      constructor(cards = []) {
+        this.cards = cards;
+      }
+      add(card) {
+        this.cards.push(card);
+      }
+      draw() {
+        return this.cards.shift();
+      }
+      shuffle() {
+        for (let i = this.cards.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+        }
+      }
+      sort() {
+  this.cards.sort((a, b) => {
+    if (Card.suitOrder[a.suit] !== Card.suitOrder[b.suit]) {
+      return Card.suitOrder[a.suit] - Card.suitOrder[b.suit];
+    }
+    return Card.rankOrder[a.value] - Card.rankOrder[b.value];
+  });
+}
+      size() {
+        return this.cards.length;
+      }
+    }
+
+    // Initialize deck using the Cards class.
+    let deck = new Cards();
+    SUITS.forEach(suit => {
+      VALUES.forEach(value => {
+        deck.add(new Card(value, suit));
+      });
+    });
+    deck.shuffle();
+
+    // Deal initial hands.
+    let playerHand = new Cards(deck.cards.splice(0, 7));
+    playerHand.sort();
+    let computerHand = new Cards(deck.cards.splice(0, 7));
+    // Initialize discard pile with one card from the deck.
+    let discardPile = new Cards([deck.draw()]);
+    let currentSuit = discardPile.cards[0].suit;
+    let turn = "player";
+    let paused = false;
+    let awaitingSuitSelection = false;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderGame();
+    });
+
+    // Reshuffle deck if empty: take discardPile (except top card) and shuffle into a new deck.
+    const reshuffleDeck = () => {
+      if (deck.size() === 0 && discardPile.cards.length > 1) {
+        const newCards = discardPile.cards.slice(1);
+        discardPile.cards = [discardPile.cards[0]]; // keep the top card intact.
+        deck.cards = newCards;
+        deck.shuffle();
+      }
+    };
+
+    const renderGame = () => {
+      if (paused) return;
+
+      // Update current suit from the top discard card.
+      currentSuit = discardPile.cards[0].suit;
+      document.querySelector(".current-suit").textContent =
+        currentSuit.charAt(0).toUpperCase() + currentSuit.slice(1);
+      document.querySelector(".turn").textContent =
+        turn === "player" ? "Your Turn" : "Computer's Turn";
+
+      // Render the discard card.
+      const discardCardEl = document.getElementById("discard-card");
+      discardCardEl.className = "discard-card card " + discardPile.cards[0].suit;
+      discardCardEl.innerHTML = `
+        <div class="card-value top-left">${discardPile.cards[0].value}</div>
+        <div class="card-suit">${discardPile.cards[0].getSuitSymbol()}</div>
+        <div class="card-value bottom-right">${discardPile.cards[0].value}</div>
+      `;
+
+      // Render player's hand.
+      const playerHandEl = document.getElementById("player-hand");
+      playerHandEl.innerHTML = "";
+      playerHand.cards.forEach((card, index) => {
+        let cardEl = document.createElement("div");
+        cardEl.innerHTML = `
+          <div class="card-value top-left">${card.value}</div>
+          <div class="card-suit">${card.getSuitSymbol()}</div>
+          <div class="card-value bottom-right">${card.value}</div>
+        `;
+        cardEl.classList.add("card", card.suit);
+        cardEl.onclick = () => playCard(card, index);
+        playerHandEl.appendChild(cardEl);
+      });
+
+      // Render computer's hand as card backs.
+      const computerHandEl = document.getElementById("computer-hand");
+      computerHandEl.innerHTML = computerHand.cards
+        .map(() => '<div class="computer-card"><img src="computer-card.jpg" /></div>')
+        .join("");
+
+      checkWinner();
+    };
+
+    // Function to display an error message for 2 seconds.
+    const showErrorMessage = (message) => {
+      const errorDiv = document.getElementById("error-message");
+      errorDiv.textContent = message;
+      errorDiv.style.display = "block";
+      setTimeout(() => {
+        errorDiv.style.display = "none";
+      }, 2000); };
+
+    const playCard = (card, index) => {
+      // Allow play if card matches suit, value, or is an 8.
+      if (
+        card.suit === currentSuit ||
+        card.value === discardPile.cards[0].value ||
+        card.value === "8"
+      ) {
+        playerHand.cards.splice(index, 1);
+        discardPile.cards.unshift(card);
+        if (card.value === "8") {
+          // Show suit selection overlay.
+          awaitingSuitSelection = true;
+          document.getElementById("suit-selection").style.display = "block";
+          renderGame();
+        } else {
+          currentSuit = card.suit;
+          turn = "computer";
+          renderGame();
+          setTimeout(computerPlay, 1000);
+        }
+      } else {
+        // Show error message if the card is invalid.
+        showErrorMessage("Invalid card select");
+      }
+    };
+
+    const drawCard = () => {
+      if (paused || awaitingSuitSelection) return;
+
+      reshuffleDeck();
+      if (deck.size() > 0) {
+        playerHand.add(deck.draw());
+        playerHand.sort();
+        turn = "computer";
+        renderGame();
+        setTimeout(computerPlay, 1000);
+      }
+    };
+
+    const computerPlay = () => {
+      let playableCard = computerHand.cards.find(
+        (c) =>
+          c.suit === currentSuit ||
+          c.value === discardPile.cards[0].value ||
+          c.value === "8"
+      );
+      if (playableCard) {
+        computerHand.cards = computerHand.cards.filter((c) => c !== playableCard);
+        discardPile.cards.unshift(playableCard);
+        if (playableCard.value === "8") {
+          let randomSuit = SUITS[Math.floor(Math.random() * SUITS.length)];
+          currentSuit = randomSuit;
+          discardPile.cards[0].suit = randomSuit;
+        } else {
+          currentSuit = playableCard.suit;
+        }
+      } else {
+        reshuffleDeck();
+        if (deck.size() > 0) {
+          computerHand.add(deck.draw());
+        }
+      }
+      turn = "player";
+      renderGame();
+    };
+
+    const checkWinner = () => {
+      if (playerHand.cards.length === 0) {
+        window.location.href = "winner.html";
+      } else if (computerHand.cards.length === 0) {
+        window.location.href = "computer-win.html";
+      }
+    };
+
+    const togglePause = () => {
+      paused = !paused;
+      document.getElementById("pause-menu").style.display = paused ? "block" : "none";
+    };
+    const resumeGame = () => togglePause();
+    const startNewGame = () => location.reload();
+    const quitGame = () => {
+      document.body.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; color:white;">
+          <h1>Game Over. Thanks for playing!</h1>
+          <button 
+            style="margin-top:20px; padding:10px 20px; font-size:16px; border:none; border-radius:5px; background:#FFD700; color:black; cursor:pointer" 
+            onclick="location.href='crazy-eights.html'">
+            Play Again
+          </button>
+        </div>
+      `;
+    };
+    // Suit selection after playing an 8.
+    const selectSuit = (suit) => {
+      currentSuit = suit;
+      if (discardPile.cards[0].value === "8") {
+        discardPile.cards[0].suit = suit;
+      }
+      awaitingSuitSelection = false;
+      document.getElementById("suit-selection").style.display = "none";
+      turn = "computer";
+      renderGame();
+      setTimeout(computerPlay, 1000);
+    };
+  </script>
+</body>
+</html>
