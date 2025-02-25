@@ -185,6 +185,42 @@
       color: red;
       display: none;
     }
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 24px;
+      }
+      .game-info, .turn {
+        font-size: 14px;
+      }
+      .card {
+        width: 70px;
+        height: 100px;
+        font-size: 14px;
+      }
+      .computer-card img {
+      width: 60px;
+      height: 90px;
+      border-radius: 8px;
+    }
+      .card-value.top-left, .card-value.bottom-right {
+        font-size: 10px;
+      }
+      .card-suit {
+        font-size: 18px;
+      }
+      .draw-btn, .pause-btn {
+        font-size: 12px;
+        padding: 8px 15px;
+      }
+      .pause-menu, #suit-selection {
+        width: 90%;
+        padding: 15px;
+      }
+      .pause-menu button, #suit-selection button {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+    }
   </style>
 </head>
 <body>
