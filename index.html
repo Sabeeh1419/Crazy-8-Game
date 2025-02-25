@@ -106,10 +106,10 @@
       background: #FF4500;
       color: white;
       border: none;
-      padding: 10px 15px;
+      padding: 8px 20px;
       border-radius: 5px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 16px;
     }
     .pause-menu {
       display: none;
@@ -185,6 +185,11 @@
       color: red;
       display: none;
     }
+    #timer {
+      position: absolute;
+      top: 44px;
+      right: 10px;
+    }
     @media (max-width: 768px) {
       h1 {
         font-size: 24px;
@@ -198,10 +203,10 @@
         font-size: 14px;
       }
       .computer-card img {
-      width: 60px;
-      height: 90px;
-      border-radius: 8px;
-    }
+        width: 60px;
+        height: 90px;
+        border-radius: 8px;
+      }
       .card-value.top-left, .card-value.bottom-right {
         font-size: 10px;
       }
@@ -220,6 +225,24 @@
         font-size: 14px;
         padding: 8px 12px;
       }
+      .pause-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #FF4500;
+        color: white;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 10px;
+      }
+      #timer {
+      position: absolute;
+      top: 30px;
+      right: 6px;
+      font-size: 10px;
+    }
     }
   </style>
 </head>
@@ -239,6 +262,7 @@
     Current Suit: <span class="current-suit"></span>
   </p>
   <p class="turn"></p>
+  <p id="timer">Time Left: 20s</p>
 
   <div class="computer-hand" id="computer-hand"></div>
   <div class="player-hand" id="player-hand"></div>
@@ -260,33 +284,70 @@
   <div id="error-message"></div>
 
   <script>
+    let paused = false;
+    let skippedTurn = false;
+
+    // Make timeLeft a global variable so we can pause/unpause without resetting
+    let timeLeft = 20;
+    let timer;
+
+    const startTimer = () => {
+      // Always set timeLeft to 20 for a fresh turn
+      timeLeft = 20;
+      document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
+      timer = setInterval(() => {
+        // If the game is paused, do not decrement time
+        if (!paused) {
+          timeLeft--;
+          document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
+          if (timeLeft === 0) {
+            clearInterval(timer);
+            if (skippedTurn) {
+              skippedTurn = false;
+              startTimer();
+            } else {
+              skippedTurn = true;
+              turn = "computer";
+              renderGame();
+              setTimeout(computerPlay, 1000);
+            }
+          }
+        }
+      }, 1000);
+    };
+
+    const resetTimer = () => {
+      clearInterval(timer);
+      skippedTurn = false;
+      startTimer();
+    };
+
     const SUITS = ["hearts", "diamonds", "clubs", "spades"];
     const VALUES = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
 
     // Card class for individual card instances.
     class Card {
-  static suitOrder = { clubs: 0, diamonds: 1, hearts: 2, spades: 3 };
-  static rankOrder = {
-    "2": 0, "3": 1, "4": 2, "5": 3, "6": 4, "7": 5,
-    "8": 6, "9": 7, "10": 8, "J": 9, "Q": 10, "K": 11, "A": 12
-  };
+      static suitOrder = { clubs: 0, diamonds: 1, hearts: 2, spades: 3 };
+      static rankOrder = {
+        "2": 0, "3": 1, "4": 2, "5": 3, "6": 4, "7": 5,
+        "8": 6, "9": 7, "10": 8, "J": 9, "Q": 10, "K": 11, "A": 12
+      };
 
-  constructor(value, suit) {
-    this.value = value;
-    this.suit = suit;
-  }
+      constructor(value, suit) {
+        this.value = value;
+        this.suit = suit;
+      }
 
-  getSuitSymbol() {
-    switch (this.suit) {
-      case "hearts":   return "♥";
-      case "diamonds": return "♦";
-      case "clubs":    return "♣";
-      case "spades":   return "♠";
-      default:         return "";
+      getSuitSymbol() {
+        switch (this.suit) {
+          case "hearts":   return "♥";
+          case "diamonds": return "♦";
+          case "clubs":    return "♣";
+          case "spades":   return "♠";
+          default:         return "";
+        }
+      }
     }
-  }
-}
-
 
     // Cards class to manage a collection of Card instances.
     class Cards {
@@ -306,13 +367,13 @@
         }
       }
       sort() {
-  this.cards.sort((a, b) => {
-    if (Card.suitOrder[a.suit] !== Card.suitOrder[b.suit]) {
-      return Card.suitOrder[a.suit] - Card.suitOrder[b.suit];
-    }
-    return Card.rankOrder[a.value] - Card.rankOrder[b.value];
-  });
-}
+        this.cards.sort((a, b) => {
+          if (Card.suitOrder[a.suit] !== Card.suitOrder[b.suit]) {
+            return Card.suitOrder[a.suit] - Card.suitOrder[b.suit];
+          }
+          return Card.rankOrder[a.value] - Card.rankOrder[b.value];
+        });
+      }
       size() {
         return this.cards.length;
       }
@@ -335,10 +396,10 @@
     let discardPile = new Cards([deck.draw()]);
     let currentSuit = discardPile.cards[0].suit;
     let turn = "player";
-    let paused = false;
     let awaitingSuitSelection = false;
 
     document.addEventListener("DOMContentLoaded", () => {
+      startTimer();
       renderGame();
     });
 
@@ -402,15 +463,18 @@
       errorDiv.style.display = "block";
       setTimeout(() => {
         errorDiv.style.display = "none";
-      }, 2000); };
+      }, 2000);
+    };
 
     const playCard = (card, index) => {
+      if (turn !== "player") return;
       // Allow play if card matches suit, value, or is an 8.
       if (
         card.suit === currentSuit ||
         card.value === discardPile.cards[0].value ||
         card.value === "8"
       ) {
+        resetTimer();
         playerHand.cards.splice(index, 1);
         discardPile.cards.unshift(card);
         if (card.value === "8") {
@@ -431,7 +495,8 @@
     };
 
     const drawCard = () => {
-      if (paused || awaitingSuitSelection) return;
+      if (paused || awaitingSuitSelection || turn !== "player") return;
+      resetTimer();
 
       reshuffleDeck();
       if (deck.size() > 0) {
@@ -467,6 +532,7 @@
         }
       }
       turn = "player";
+      resetTimer();
       renderGame();
     };
 
@@ -490,7 +556,7 @@
           <h1>Game Over. Thanks for playing!</h1>
           <button 
             style="margin-top:20px; padding:10px 20px; font-size:16px; border:none; border-radius:5px; background:#FFD700; color:black; cursor:pointer" 
-            onclick="location.href='index.html'">
+            onclick="location.href='crazy-eights.html'">
             Play Again
           </button>
         </div>
