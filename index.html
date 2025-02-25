@@ -240,11 +240,11 @@
         font-size: 10px;
       }
       #timer {
-      position: absolute;
-      top: 30px;
-      right: 6px;
-      font-size: 10px;
-    }
+        position: absolute;
+        top: 30px;
+        right: 6px;
+        font-size: 10px;
+      }
     }
   </style>
 </head>
@@ -287,52 +287,21 @@
 
   <script>
     let paused = false;
-    let skippedTurn = false;
-
-    // Make timeLeft a global variable so we can pause/unpause without resetting
     let timeLeft = 20;
     let timer;
-
-    const startTimer = () => {
-      // Always set timeLeft to 20 for a fresh turn
-      timeLeft = 20;
-      document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
-      timer = setInterval(() => {
-        // If the game is paused, do not decrement time
-        if (!paused) {
-          timeLeft--;
-          document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
-          if (timeLeft === 0) {
-            clearInterval(timer);
-            if (skippedTurn) {
-              skippedTurn = false;
-              startTimer();
-            } else {
-              skippedTurn = true;
-              turn = "computer";
-              renderGame();
-              setTimeout(computerPlay, 1000);
-            }
-          }
-        }
-      }, 1000);
-    };
-
-    const resetTimer = () => {
-      clearInterval(timer);
-      skippedTurn = false;
-      startTimer();
-    };
+    let turn = "player";
+    let skippedTurn = false;
+    let awaitingSuitSelection = false;
 
     const SUITS = ["hearts", "diamonds", "clubs", "spades"];
-    const VALUES = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+    const VALUES = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 
-    // Card class for individual card instances.
     class Card {
       static suitOrder = { clubs: 0, diamonds: 1, hearts: 2, spades: 3 };
       static rankOrder = {
-        "2": 0, "3": 1, "4": 2, "5": 3, "6": 4, "7": 5,
-        "8": 6, "9": 7, "10": 8, "J": 9, "Q": 10, "K": 11, "A": 12
+        "2": 0, "3": 1, "4": 2, "5": 3, "6": 4,
+        "7": 5, "8": 6, "9": 7, "10": 8,
+        "J": 9, "Q": 10, "K": 11, "A": 12
       };
 
       constructor(value, suit) {
@@ -351,7 +320,6 @@
       }
     }
 
-    // Cards class to manage a collection of Card instances.
     class Cards {
       constructor(cards = []) {
         this.cards = cards;
@@ -381,7 +349,6 @@
       }
     }
 
-    // Initialize deck using the Cards class.
     let deck = new Cards();
     SUITS.forEach(suit => {
       VALUES.forEach(value => {
@@ -390,26 +357,59 @@
     });
     deck.shuffle();
 
-    // Deal initial hands.
     let playerHand = new Cards(deck.cards.splice(0, 7));
     playerHand.sort();
     let computerHand = new Cards(deck.cards.splice(0, 7));
-    // Initialize discard pile with one card from the deck.
     let discardPile = new Cards([deck.draw()]);
     let currentSuit = discardPile.cards[0].suit;
-    let turn = "player";
-    let awaitingSuitSelection = false;
 
     document.addEventListener("DOMContentLoaded", () => {
       startTimer();
       renderGame();
     });
 
-    // Reshuffle deck if empty: take discardPile (except top card) and shuffle into a new deck.
+    const startTimer = () => {
+      timeLeft = 20;
+      document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
+      timer = setInterval(() => {
+        if (!paused) {
+          timeLeft--;
+          document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
+          if (timeLeft === 0) {
+            clearInterval(timer);
+            // If it's the player's turn and they did nothing, auto-draw, then switch to computer.
+            if (turn === "player") {
+              drawCard(true); // pass a param to indicate forced draw
+              turn = "computer";
+              renderGame();
+              setTimeout(computerPlay, 1000);
+            } else {
+              // Default skip logic for the computer if needed
+              if (skippedTurn) {
+                skippedTurn = false;
+                startTimer();
+              } else {
+                skippedTurn = true;
+                turn = "computer";
+                renderGame();
+                setTimeout(computerPlay, 1000);
+              }
+            }
+          }
+        }
+      }, 1000);
+    };
+
+    const resetTimer = () => {
+      clearInterval(timer);
+      skippedTurn = false;
+      startTimer();
+    };
+
     const reshuffleDeck = () => {
       if (deck.size() === 0 && discardPile.cards.length > 1) {
         const newCards = discardPile.cards.slice(1);
-        discardPile.cards = [discardPile.cards[0]]; // keep the top card intact.
+        discardPile.cards = [discardPile.cards[0]]; 
         deck.cards = newCards;
         deck.shuffle();
       }
@@ -418,14 +418,12 @@
     const renderGame = () => {
       if (paused) return;
 
-      // Update current suit from the top discard card.
       currentSuit = discardPile.cards[0].suit;
       document.querySelector(".current-suit").textContent =
         currentSuit.charAt(0).toUpperCase() + currentSuit.slice(1);
       document.querySelector(".turn").textContent =
         turn === "player" ? "Your Turn" : "Computer's Turn";
 
-      // Render the discard card.
       const discardCardEl = document.getElementById("discard-card");
       discardCardEl.className = "discard-card card " + discardPile.cards[0].suit;
       discardCardEl.innerHTML = `
@@ -434,7 +432,7 @@
         <div class="card-value bottom-right">${discardPile.cards[0].value}</div>
       `;
 
-      // Render player's hand.
+      // Render player's hand
       const playerHandEl = document.getElementById("player-hand");
       playerHandEl.innerHTML = "";
       playerHand.cards.forEach((card, index) => {
@@ -449,7 +447,7 @@
         playerHandEl.appendChild(cardEl);
       });
 
-      // Render computer's hand as card backs.
+      // Render computer's hand as card backs
       const computerHandEl = document.getElementById("computer-hand");
       computerHandEl.innerHTML = computerHand.cards
         .map(() => '<div class="computer-card"><img src="computer-card.jpg" /></div>')
@@ -458,7 +456,6 @@
       checkWinner();
     };
 
-    // Function to display an error message for 2 seconds.
     const showErrorMessage = (message) => {
       const errorDiv = document.getElementById("error-message");
       errorDiv.textContent = message;
@@ -470,7 +467,6 @@
 
     const playCard = (card, index) => {
       if (turn !== "player") return;
-      // Allow play if card matches suit, value, or is an 8.
       if (
         card.suit === currentSuit ||
         card.value === discardPile.cards[0].value ||
@@ -480,7 +476,6 @@
         playerHand.cards.splice(index, 1);
         discardPile.cards.unshift(card);
         if (card.value === "8") {
-          // Show suit selection overlay.
           awaitingSuitSelection = true;
           document.getElementById("suit-selection").style.display = "block";
           renderGame();
@@ -491,19 +486,22 @@
           setTimeout(computerPlay, 1000);
         }
       } else {
-        // Show error message if the card is invalid.
         showErrorMessage("Invalid card select");
       }
     };
 
-    const drawCard = () => {
-      if (paused || awaitingSuitSelection || turn !== "player") return;
+    // Added an optional "forced" param so we know if the draw is automatic
+    const drawCard = (forced = false) => {
+      if (!forced && (paused || awaitingSuitSelection || turn !== "player")) return;
       resetTimer();
 
       reshuffleDeck();
       if (deck.size() > 0) {
         playerHand.add(deck.draw());
         playerHand.sort();
+      }
+      // If forced, don't set turn to "computer" here, we handle that in the timer logic
+      if (!forced) {
         turn = "computer";
         renderGame();
         setTimeout(computerPlay, 1000);
@@ -564,7 +562,7 @@
         </div>
       `;
     };
-    // Suit selection after playing an 8.
+
     const selectSuit = (suit) => {
       currentSuit = suit;
       if (discardPile.cards[0].value === "8") {
