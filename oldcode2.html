@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Crazy Eights</title>
   <style>
-   
     body {
       text-align: center;
       font-family: Arial, sans-serif;
@@ -17,6 +16,7 @@
       align-items: center;
       justify-content: center;
       position: relative;
+      
     }
     .pause-menu {
   display: none;
@@ -44,7 +44,7 @@
       border-radius: 10px;
       margin-bottom: 20px;
       font-size: 18px;
-      margin-top: 70px;
+      margin-top: 55px;
     }
     .turn {
       font-size: 20px;
@@ -113,13 +113,12 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
-      margin-bottom: 80px;
       margin-top: 20px;
     }
     .pause-btn {
       position: absolute;
       top: 80px;
-      right: 25px;
+      right: 10px;
       background: #FF4500;
       color: white;
       border: none;
@@ -205,30 +204,13 @@
     #timer {
       position: absolute;
       top: 120px;
-      right: 25px;
+      right: 10px;
     }
     .navbar{
 position: absolute;
 top: 0px;
 left: 0px;
     }
-    .footer {
-    background: black;
-    color: white;
-    bottom: 0;
-    width: 100vw !important; /* Full viewport width */
-
-    
-     }
-     @media (min-width: 1024px) { /* Applies only to large screens (1024px and above) */
-    html, body {
-        overflow-x: hidden; /* Prevents horizontal scrolling */
-        width: 100vw; /* Ensures full viewport width */
-    }
-}
-
-
-
     @media (max-width: 768px) {
       h1 {
         font-size: 24px;
@@ -297,7 +279,6 @@ left: 0px;
     <iframe src="navbar.html" style="width:100%; border:none;"></iframe>
 </header> -->
 <header id="navbar-container"></header>
-
   <button class="pause-btn" onclick="togglePause()">⏸ Pause</button>
   <div class="pause-menu" id="pause-menu">
     <h2>Game Paused</h2>
@@ -333,7 +314,6 @@ left: 0px;
   
   <!-- Error message element -->
   <div id="error-message"></div>
-  <div id="footer-container"></div>
 
   <script>
      function loadNavbar() {
@@ -392,25 +372,12 @@ left: 0px;
       });
     }
   }
-}  
+}
+
+
+        
         window.addEventListener('load', loadNavbar);
         window.addEventListener('resize', loadNavbar);
-
-
-
-        function loadFooter() {
-      fetch("footer.html")
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById("footer-container").innerHTML = data;
-        })
-        .catch(error => console.error("Error loading footer:", error));
-    }
-
-    // Load the footer when the page is fully loaded
-    document.addEventListener("DOMContentLoaded", loadFooter);
-
-
     let paused = false;
     let timeLeft = 20;
     let timer;
