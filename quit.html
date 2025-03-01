@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Computer Wins!</title>
+  <title>Game Quit!</title>
   <style>
     body {
       margin: 0;
@@ -18,18 +18,14 @@
       align-items: center;
     }
     h1 {
-      color: yellow;
       font-size: 4rem;
       margin: 20px 0;
       text-shadow: 2px 2px #000;
-    }
-    .msg {
-      font-size: 1.5rem;
-      margin-bottom: 40px;
+      color: yellow;
     }
     .button-container {
       margin-top: 20px;
-      margin-bottom: 180px;
+      margin-bottom: 200px;
     }
     .play-again-btn,
     .quit-btn {
@@ -69,24 +65,24 @@ left: 0px;
      @media (max-width: 768px) {
       .button-container {
       margin-top: 20px;
-      margin-bottom: 280px;
+      margin-bottom: 300px;
+    }
+    h1{
+      font-size: 3rem;
     }
      }
-     
   </style>
 </head>
 <body>
   <header id="navbar-container"></header>
-
-  <h1>Oh No!</h1>
-  <div class="msg">The computer has beaten you this time.</div>
+  <h1>Game Over. Thanks for playing!</h1>
+  
   <div class="button-container">
-    <button class="play-again-btn" onclick="playAgain()">Try Again</button>
-    <button class="quit-btn" onclick="quitGame()">Quit</button>
+    <button class="play-again-btn" onclick="playAgain()">Play Again</button>
   </div>
   <div id="footer-container"></div>
   <script>
-     function loadNavbar() {
+    function loadNavbar() {
   const navbarContainer = document.getElementById('navbar-container');
   if (!navbarContainer) {
     console.error('Navbar container not found!');
@@ -160,11 +156,10 @@ left: 0px;
     // Load the footer when the page is fully loaded
     document.addEventListener("DOMContentLoaded", loadFooter);
     function playAgain() {
+      // Redirect back to the game page
       window.location.href = "crazy-eights.html";
     }
-    function quitGame() {
-      window.location.href = "quit.html";
-    }
+  
   </script>
 </body>
 </html>

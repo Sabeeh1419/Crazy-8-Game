@@ -678,18 +678,9 @@ left: 0px;
     };
     const resumeGame = () => togglePause();
     const startNewGame = () => location.reload();
-    const quitGame = () => {
-      document.body.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; color:white;">
-          <h1>Game Over. Thanks for playing!</h1>
-          <button 
-            style="margin-top:20px; padding:10px 20px; font-size:16px; border:none; border-radius:5px; background:#FFD700; color:black; cursor:pointer" 
-            onclick="location.href='crazy-eights.html'">
-            Play Again
-          </button>
-        </div>
-      `;
-    };
+    function quitGame() {
+      window.location.href = "quit.html";
+    }
 
     const selectSuit = (suit) => {
       currentSuit = suit;
