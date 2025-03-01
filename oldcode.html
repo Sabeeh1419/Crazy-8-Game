@@ -16,7 +16,6 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      
     }
     .pause-menu {
   display: none;
@@ -44,7 +43,6 @@
       border-radius: 10px;
       margin-bottom: 20px;
       font-size: 18px;
-      margin-top: 55px;
     }
     .turn {
       font-size: 20px;
@@ -117,17 +115,17 @@
     }
     .pause-btn {
       position: absolute;
-      top: 80px;
+      top: 10px;
       right: 10px;
       background: #FF4500;
       color: white;
       border: none;
-      padding: 6px 20px;
+      padding: 8px 20px;
       border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
     }
-    /* .pause-menu {
+    .pause-menu {
       display: none;
       position: fixed;
       top: 50%;
@@ -138,7 +136,7 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
       text-align: center;
-    } */
+    }
     .pause-menu button {
       display: block;
       margin: 10px auto;
@@ -203,13 +201,8 @@
     }
     #timer {
       position: absolute;
-      top: 120px;
+      top: 44px;
       right: 10px;
-    }
-    .navbar{
-position: absolute;
-top: 0px;
-left: 0px;
     }
     @media (max-width: 768px) {
       h1 {
@@ -255,7 +248,7 @@ left: 0px;
       
       .pause-btn {
         position: absolute;
-        top: 75px;
+        top: 8px;
         right: 8px;
         background: #FF4500;
         color: white;
@@ -267,7 +260,7 @@ left: 0px;
       }
       #timer {
         position: absolute;
-        top: 105px;
+        top: 30px;
         right: 6px;
         font-size: 10px;
       }
@@ -275,10 +268,6 @@ left: 0px;
   </style>
 </head>
 <body>
-  <!-- <header class="navbar">
-    <iframe src="navbar.html" style="width:100%; border:none;"></iframe>
-</header> -->
-<header id="navbar-container"></header>
   <button class="pause-btn" onclick="togglePause()">⏸ Pause</button>
   <div class="pause-menu" id="pause-menu">
     <h2>Game Paused</h2>
@@ -287,7 +276,7 @@ left: 0px;
     <button class="quit-btn" onclick="quitGame()">🚪 Quit Game</button>
   </div>
 
-  <!-- <h1>Crazy Eights</h1> -->
+  <h1>Crazy Eights</h1>
   <!-- Discard card -->
   <div class="discard-card" id="discard-card"></div>
   <p class="game-info">
@@ -316,68 +305,6 @@ left: 0px;
   <div id="error-message"></div>
 
   <script>
-     function loadNavbar() {
-  const navbarContainer = document.getElementById('navbar-container');
-  if (!navbarContainer) {
-    console.error('Navbar container not found!');
-    return;
-  }
-  
-  // Determine which navbar file to load based on screen size.
-  const isSmallScreen = window.innerWidth <= 768;
-  const navbarFile = isSmallScreen ? 'small-navbar.html' : 'large-navbar.html';
-
-  // Fetch the appropriate navbar HTML file.
-  fetch(navbarFile)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.statusText}`);
-      }
-      return response.text();
-    })
-    .then(html => {
-      navbarContainer.innerHTML = html;
-      loadNavbarScript(); // Initialize navbar functionality after loading HTML.
-    })
-    .catch(error => {
-      console.error('Error loading navbar:', error);
-    });
-
-  // Activate navbar interactive features.
-  function loadNavbarScript() {
-    const hamburger = document.getElementById("hamburger");
-    const navOptions = document.getElementById("nav-options");
-    const closeBtn = document.getElementById("close-btn");
-
-    if (hamburger && navOptions) {
-      hamburger.addEventListener("click", function (event) {
-        navOptions.classList.toggle("active");
-        event.stopPropagation(); // Prevent click event from bubbling.
-      });
-
-      document.addEventListener("click", function (event) {
-        // Close the navbar if clicking outside of it.
-        if (!navOptions.contains(event.target) && !hamburger.contains(event.target)) {
-          navOptions.classList.remove("active");
-        }
-      });
-    } else {
-      console.error('Hamburger or navigation options element not found!');
-    }
-
-    // Optionally, if a close button exists, allow it to close the navbar.
-    if (closeBtn && navOptions) {
-      closeBtn.addEventListener("click", function () {
-        navOptions.classList.remove("active");
-      });
-    }
-  }
-}
-
-
-        
-        window.addEventListener('load', loadNavbar);
-        window.addEventListener('resize', loadNavbar);
     let paused = false;
     let timeLeft = 20;
     let timer;

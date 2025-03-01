@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small Screen Navbar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: linear-gradient(to left, #134E5E, #71B280);
+            color: white;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: yellow;
+        }
+        .hamburger {
+            display: block;
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+        }
+
+        /* Sidebar menu (50% width) */
+        .nav-options {
+            position: fixed;
+            top: 0;
+            right: -100%; /* Initially hidden */
+            width: 50%; /* Covers half the screen */
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95); /* Semi-transparent background */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 2rem;
+            transition: right 0.3s ease-in-out;
+            z-index: 999;
+        }
+        .nav-options a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            transition: 0.3s;
+        }
+        .nav-options a:hover {
+            color: yellow;
+        }
+        .nav-options.active {
+            right: 0; /* Slide in from the right */
+        }
+
+        /* Close Button */
+        .close-btn {
+            font-size: 2rem;
+            cursor: pointer;
+            color: white;
+            background: none;
+            border: none;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive: Make full width for smaller screens */
+        @media (max-width: 600px) {
+            .nav-options {
+                width: 50%; /* Full width on small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Crazy Eights</div>
+        <button class="hamburger" id="hamburger">&#9776;</button>
+    </nav>
+
+    <!-- Sliding pop-up menu -->
+    <div class="nav-options" id="nav-options">
+        <button class="close-btn" id="close-btn">&times;</button>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#game">Game</a>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            
+            const hamburger = document.getElementById("hamburger");
+            const navOptions = document.getElementById("nav-options");
+            const closeBtn = document.getElementById("close-btn");
+
+             hamburger.addEventListener("click", function () {
+                navOptions.classList.toggle("active");
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener("click", function (event) {
+                if (!navOptions.contains(event.target) && !hamburger.contains(event.target)) {
+                    navOptions.classList.remove("active");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
