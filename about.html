@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Play</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0%;
+            padding-top: 100px;
+            /* padding-bottom: 0px;
+            padding-left: 0%; */
+            background: linear-gradient(to left, #134E5E, #71B280);
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 60px;
+            margin-bottom: 3%;
+           
+        }
+        p {
+            font-size: 22px;
+        }
+        .instructions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 50px;
+            margin-top: 50px;
+        }
+        .instruction {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .instruction img {
+            width: 550px;
+            height: auto;
+            border: 4px solid #000;
+            border-radius: 15px;
+        }
+        .instruction:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+        .text-box {
+            width: 40%;
+            text-align: center;
+        }
+        .text-box h2 {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 5%;
+        }
+        .text-box p {
+            font-size: 22px;
+        }
+        .start-button {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 20px 40px;
+            background-color: red;
+            color: white;
+            font-size: 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 4%;
+        }
+        .start-button:hover {
+            background-color: darkred;
+        }
+        .navbar{
+position: absolute;
+top: 0px;
+left: 0px;
+    }
+        .footer {
+    background: black;
+    color: white;
+    bottom: 0;
+    width: 100vw !important; /* Full viewport width */
+  
+     }
+     @media (min-width: 1024px) { /* Applies only to large screens (1024px and above) */
+    html, body {
+        overflow-x: hidden; /* Prevents horizontal scrolling */
+        width: 100vw; /* Ensures full viewport width */
+    }
+}
+        @media (max-width: 600px) {
+            .instruction {
+                flex-direction: column !important;
+                text-align: center;
+            }
+            .text-box {
+                width: 100%;
+                text-align: center;
+            }
+            .instruction img {
+                width: 80%;
+            }
+            h1{
+                font-size: 42px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="navbar-container"></header>
+    <div class="container">
+        <h1>How to Play</h1>
+        <p>Be the first to discard all of your cards to win the game.</p>
+
+        <div class="instructions">
+            <div class="instruction">
+                <div class="text-box">
+                    <h2>Play a card</h2>
+                    <p>Click on a card from your hand that matches either the suit or the value of the top card in the discard pile. Example: If the top card is a six of clubs, you can play any card that is a club or a six.</p>
+                </div>
+                <img src="demo.gif" alt="Play a card">
+            </div>
+
+            <div class="instruction">
+                <div class="text-box">
+                    <h2>Draw a card</h2>
+                    <p>If you don't have any cards that are playable you must click on the deck to draw a card. After drawing a card you can play a card, draw another card, or pass.</p>
+                </div>
+                <img src="draw.gif" alt="Draw a card">
+            </div>
+
+            <div class="instruction">
+                <div class="text-box">
+                    <h2>Eights are wild</h2>
+                    <p>Eights can be played at any time. When you play an eight you get to choose what suit must be played next.</p>
+                </div>
+                <img src="eight.gif" alt="Eights are wild">
+            </div>
+        </div>
+
+        <button class="start-button" onclick="startGame()">Start Game</button>
+    </div>
+    <footer id="footer-container"></footer>
+    <script>
+        function startGame() {
+            window.location.href = "index.html";
+           
+        }
+        function loadFooter() {
+      fetch("footer.html")
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById("footer-container").innerHTML = data;
+        })
+        .catch(error => console.error("Error loading footer:", error));
+    }
+
+    // Load the footer when the page is fully loaded
+    document.addEventListener("DOMContentLoaded", loadFooter);
+
+    function loadNavbar() {
+  const navbarContainer = document.getElementById('navbar-container');
+  if (!navbarContainer) {
+    console.error('Navbar container not found!');
+    return;
+  }
+  
+  // Determine which navbar file to load based on screen size.
+  const isSmallScreen = window.innerWidth <= 768;
+  const navbarFile = isSmallScreen ? 'small-navbar.html' : 'large-navbar.html';
+
+  // Fetch the appropriate navbar HTML file.
+  fetch(navbarFile)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+      }
+      return response.text();
+    })
+    .then(html => {
+      navbarContainer.innerHTML = html;
+      loadNavbarScript(); // Initialize navbar functionality after loading HTML.
+    })
+    .catch(error => {
+      console.error('Error loading navbar:', error);
+    });
+
+  // Activate navbar interactive features.
+  function loadNavbarScript() {
+    const hamburger = document.getElementById("hamburger");
+    const navOptions = document.getElementById("nav-options");
+    const closeBtn = document.getElementById("close-btn");
+
+    if (hamburger && navOptions) {
+      hamburger.addEventListener("click", function (event) {
+        navOptions.classList.toggle("active");
+        event.stopPropagation(); // Prevent click event from bubbling.
+      });
+
+      document.addEventListener("click", function (event) {
+        // Close the navbar if clicking outside of it.
+        if (!navOptions.contains(event.target) && !hamburger.contains(event.target)) {
+          navOptions.classList.remove("active");
+        }
+      });
+    } else {
+      console.error('Hamburger or navigation options element not found!');
+    }
+
+    // Optionally, if a close button exists, allow it to close the navbar.
+    if (closeBtn && navOptions) {
+      closeBtn.addEventListener("click", function () {
+        navOptions.classList.remove("active");
+      });
+    }
+  }
+}  
+        window.addEventListener('load', loadNavbar);
+        window.addEventListener('resize', loadNavbar);
+
+    </script>
+
+</body>
+</html>

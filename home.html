@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crazy Eights</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+        }
+        .image-container img {
+            width: 100%;
+            height: 100vh;
+            object-fit: cover;
+            display: block;
+        }
+        .overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+        .overlay h1 {
+            font-size: 80px;
+            font-weight: bold;
+            color: red;
+            text-shadow: -3px -3px 0 white, 3px -3px 0 white, -3px 3px 0 white, 3px 3px 0 white, 2px 2px 5px black;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 24px;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background-color: darkred;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="image-container">
+        <header id="navbar-container"></header>
+
+        <img src="cards.jpg" alt="Header Image">
+        <div class="overlay">
+            <h1>Crazy Eights</h1>
+            <div class="buttons">
+                <button class="btn" onclick="aboutpage()">Learn More</button>
+                <button class="btn" onclick="game()">Play Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function aboutpage() {
+            window.location.href = "about.html";
+        }
+        function game(){
+             window.location.href = "index.html";
+        }
+
+         function loadNavbar() {
+  const navbarContainer = document.getElementById('navbar-container');
+  if (!navbarContainer) {
+    console.error('Navbar container not found!');
+    return;
+  }
+  
+  // Determine which navbar file to load based on screen size.
+  const isSmallScreen = window.innerWidth <= 768;
+  const navbarFile = isSmallScreen ? 'small-navbar.html' : 'large-navbar.html';
+
+  // Fetch the appropriate navbar HTML file.
+  fetch(navbarFile)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+      }
+      return response.text();
+    })
+    .then(html => {
+      navbarContainer.innerHTML = html;
+      loadNavbarScript(); // Initialize navbar functionality after loading HTML.
+    })
+    .catch(error => {
+      console.error('Error loading navbar:', error);
+    });
+
+  // Activate navbar interactive features.
+  function loadNavbarScript() {
+    const hamburger = document.getElementById("hamburger");
+    const navOptions = document.getElementById("nav-options");
+    const closeBtn = document.getElementById("close-btn");
+
+    if (hamburger && navOptions) {
+      hamburger.addEventListener("click", function (event) {
+        navOptions.classList.toggle("active");
+        event.stopPropagation(); // Prevent click event from bubbling.
+      });
+
+      document.addEventListener("click", function (event) {
+        // Close the navbar if clicking outside of it.
+        if (!navOptions.contains(event.target) && !hamburger.contains(event.target)) {
+          navOptions.classList.remove("active");
+        }
+      });
+    } else {
+      console.error('Hamburger or navigation options element not found!');
+    }
+
+    // Optionally, if a close button exists, allow it to close the navbar.
+    if (closeBtn && navOptions) {
+      closeBtn.addEventListener("click", function () {
+        navOptions.classList.remove("active");
+      });
+    }
+  }
+}  
+        window.addEventListener('load', loadNavbar);
+        window.addEventListener('resize', loadNavbar);
+
+    </script>
+</body>
+</html>
