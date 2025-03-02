@@ -1,342 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Crazy Eights</title>
-  <style>
-   
-    body {
-      text-align: center;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to left, #134E5E, #71B280);
-      color: white;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-    .pause-menu {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #1E1E1E;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-  text-align: center;
-  /* Added to keep it above the cards, even when scrolling */
-  z-index: 9999;
-}
-    h1 {
-      color: #FFD700;
-    }
-    .game-info {
-      font-size: 18px;
-      margin: 10px 0;
-    }
-    .discard-card {
-      border: 3px solid white;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      font-size: 18px;
-      margin-top: 90px;
-    }
-    .turn {
-      font-size: 20px;
-      font-weight: bold;
-    }
-    .player-hand,
-    .computer-hand {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    /* Card styling: bigger size, white background, suit/value layout */
-    .card {
-      position: relative;
-      width: 120px;
-      height: 160px;
-      background: #fff;
-      color: black;
-      border: 3px solid white;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 18px;
-    }
-    /* Top-left corner value */
-    .card-value.top-left {
-      position: absolute;
-      top: 5px;
-      left: 5px;
-      font-size: 14px;
-    }
-    /* Bottom-right corner value */
-    .card-value.bottom-right {
-      position: absolute;
-      bottom: 5px;
-      right: 5px;
-      font-size: 14px;
-    }
-    /* Center suit symbol */
-    .card-suit {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 26px;
-    }
-    /* Make Hearts (♥) and Diamonds (♦) text red */
-    .hearts .card-value,
-    .hearts .card-suit,
-    .diamonds .card-value,
-    .diamonds .card-suit {
-      color: red !important;
-    }
-    /* Slightly smaller computer card images */
-    .computer-card img {
-      width: 100px;
-      height: 140px;
-      border-radius: 10px;
-    }
-    .draw-btn {
-      padding: 10px 20px;
-      background: #1E90FF;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-bottom: 80px;
-      margin-top: 20px;
-    }
-    .pause-btn {
-      position: absolute;
-      top: 80px;
-      right: 25px;
-      background: #FF4500;
-      color: white;
-      border: none;
-      padding: 6px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    /* .pause-menu {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #1E1E1E;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-      text-align: center;
-    } */
-    .pause-menu button {
-      display: block;
-      margin: 10px auto;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .resume-btn {
-      background: #00FF00;
-      color: black;
-    }
-    .quit-btn {
-      background: #FF4500;
-      color: white;
-    }
-    .new-game-btn {
-      background: #FFD700;
-      color: black;
-    }
-    /* Suit selection overlay */
-    #suit-selection {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #1E1E1E;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-      text-align: center;
-      z-index: 1000;
-    }
-    #suit-selection h3 {
-      margin-bottom: 15px;
-    }
-    #suit-selection button {
-      background: #fff;
-      border: none;
-      border-radius: 5px;
-      font-size: 24px;
-      margin: 0 10px;
-      cursor: pointer;
-      width: 60px;
-      height: 60px;
-    }
-    /* Styling for red suits */
-    .red-suit {
-      color: red;
-    }
-    /* Error message styling */
-    #error-message {
-      position: inherit;
-      bottom: 60px;
-      width: 100%;
-      text-align: center;
-      font-size: 18px;
-      color: red;
-      display: none;
-    }
-    #timer {
-      position: absolute;
-      top: 120px;
-      right: 25px;
-    }
-    .navbar{
-position: absolute;
-top: 0px;
-left: 0px;
-    }
-    .footer {
-    background: black;
-    color: white;
-    bottom: 0;
-    width: 100vw !important; /* Full viewport width */
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crazy Eights</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+        }
+        .image-container img {
+            width: 100%;
+            height: 100vh;
+            object-fit: cover;
+            display: block;
+        }
+        .overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+        }
+        .overlay h1 {
+            font-size: 80px;
+            font-weight: bold;
+            color: red;
+            text-shadow: -3px -3px 0 white, 3px -3px 0 white, -3px 3px 0 white, 3px 3px 0 white, 2px 2px 5px black;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 24px;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background-color: darkred;
+        }
 
-    
-     }
-     @media (min-width: 1024px) { /* Applies only to large screens (1024px and above) */
-    html, body {
-        overflow-x: hidden; /* Prevents horizontal scrolling */
-        width: 100vw; /* Ensures full viewport width */
-    }
-}
-
-
-
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 24px;
-      }
-      .game-info, .turn {
-        font-size: 14px;
-        margin-top: 1%;
-        margin-bottom: 1%;
-      }
-      .card {
-        width: 60px;
-        height: 90px;
-        font-size: 14px;
-      }
-      .computer-card img {
-        width: 50px;
-        height: 80px;
-        border-radius: 8px;
-      }
-      .card-value.top-left, .card-value.bottom-right {
-        font-size: 10px;
-      }
-      .card-suit {
-        font-size: 18px;
-      }
-      .draw-btn, .pause-btn {
-        font-size: 12px;
-        padding: 8px 15px;
-      }
-      .pause-menu, #suit-selection {
-        width: 90%;
-        padding: 15px;
-      }
-      .pause-menu button, #suit-selection button {
-        font-size: 14px;
-        padding: 8px 12px;
-      }
-      .pause-menu {
-    width: 50%;
-    padding: 15px;
-  }
-      
-      .pause-btn {
-        position: absolute;
-        top: 75px;
-        right: 12px;
-        background: #FF4500;
-        color: white;
-        border: none;
-        padding: 6px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 10px;
-      }
-      #timer {
-        position: absolute;
-        top: 105px;
-        right: 12px;
-        font-size: 10px;
-      }
-    }
-  </style>
+    </style>
 </head>
 <body>
-  <!-- <header class="navbar">
-    <iframe src="navbar.html" style="width:100%; border:none;"></iframe>
-</header> -->
-<header id="navbar-container"></header>
+    <div class="image-container">
+        <header id="navbar-container"></header>
 
-  <button class="pause-btn" onclick="togglePause()">⏸ Pause</button>
-  <div class="pause-menu" id="pause-menu">
-    <h2>Game Paused</h2>
-    <button class="resume-btn" onclick="resumeGame()">▶ Resume Game</button>
-    <button class="new-game-btn" onclick="startNewGame()">🔄 New Game</button>
-    <button class="quit-btn" onclick="quitGame()">🚪 Quit Game</button>
-  </div>
-
-  <!-- <h1>Crazy Eights</h1> -->
-  <!-- Discard card -->
-  <div class="discard-card" id="discard-card"></div>
-  <p class="game-info">
-    Current Suit: <span class="current-suit"></span>
-  </p>
-  <p class="turn"></p>
-  <p id="timer">Time Left: 20s</p>
-
-  <div class="computer-hand" id="computer-hand"></div>
-  <div class="player-hand" id="player-hand"></div>
-
-  <button class="draw-btn" onclick="drawCard()">Draw Card</button>
-
-  <!-- Suit selection overlay for when an 8 is played -->
-  <div id="suit-selection">
-    <h3>Select a Suit</h3>
-    <div>
-      <button onclick="selectSuit('hearts')" class="red-suit">♥</button>
-      <button onclick="selectSuit('diamonds')" class="red-suit">♦</button>
-      <button onclick="selectSuit('clubs')">♣</button>
-      <button onclick="selectSuit('spades')">♠</button>
+        <img src="cards.jpg" alt="Header Image">
+        <div class="overlay">
+            <h1>Crazy Eights</h1>
+            <div class="buttons">
+                <button class="btn" onclick="aboutpage()">Learn More</button>
+                <button class="btn" onclick="game()">Play Now</button>
+            </div>
+        </div>
     </div>
-  </div>
-  
-  <!-- Error message element -->
-  <div id="error-message"></div>
-  <div id="footer-container"></div>
 
-  <script>
-     function loadNavbar() {
+    <script>
+        function aboutpage() {
+            window.location.href = "about.html";
+        }
+        function game(){
+             window.location.href = "crazy-eights.html";
+        }
+
+         function loadNavbar() {
   const navbarContainer = document.getElementById('navbar-container');
   if (!navbarContainer) {
     console.error('Navbar container not found!');
@@ -396,300 +140,6 @@ left: 0px;
         window.addEventListener('load', loadNavbar);
         window.addEventListener('resize', loadNavbar);
 
-
-
-        function loadFooter() {
-      fetch("footer.html")
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById("footer-container").innerHTML = data;
-        })
-        .catch(error => console.error("Error loading footer:", error));
-    }
-
-    // Load the footer when the page is fully loaded
-    document.addEventListener("DOMContentLoaded", loadFooter);
-
-
-    let paused = false;
-    let timeLeft = 20;
-    let timer;
-    let turn = "player";
-    let skippedTurn = false;
-    let awaitingSuitSelection = false;
-
-    const SUITS = ["hearts", "diamonds", "clubs", "spades"];
-    const VALUES = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
-
-    class Card {
-      static suitOrder = { clubs: 0, diamonds: 1, hearts: 2, spades: 3 };
-      static rankOrder = {
-        "2": 0, "3": 1, "4": 2, "5": 3, "6": 4,
-        "7": 5, "8": 6, "9": 7, "10": 8,
-        "J": 9, "Q": 10, "K": 11, "A": 12
-      };
-
-      constructor(value, suit) {
-        this.value = value;
-        this.suit = suit;
-      }
-
-      getSuitSymbol() {
-        switch (this.suit) {
-          case "hearts":   return "♥";
-          case "diamonds": return "♦";
-          case "clubs":    return "♣";
-          case "spades":   return "♠";
-          default:         return "";
-        }
-      }
-    }
-
-    class Cards {
-      constructor(cards = []) {
-        this.cards = cards;
-      }
-      add(card) {
-        this.cards.push(card);
-      }
-      draw() {
-        return this.cards.shift();
-      }
-      shuffle() {
-        for (let i = this.cards.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
-        }
-      }
-      sort() {
-        this.cards.sort((a, b) => {
-          if (Card.suitOrder[a.suit] !== Card.suitOrder[b.suit]) {
-            return Card.suitOrder[a.suit] - Card.suitOrder[b.suit];
-          }
-          return Card.rankOrder[a.value] - Card.rankOrder[b.value];
-        });
-      }
-      size() {
-        return this.cards.length;
-      }
-    }
-
-    let deck = new Cards();
-    SUITS.forEach(suit => {
-      VALUES.forEach(value => {
-        deck.add(new Card(value, suit));
-      });
-    });
-    deck.shuffle();
-
-    let playerHand = new Cards(deck.cards.splice(0, 7));
-    playerHand.sort();
-    let computerHand = new Cards(deck.cards.splice(0, 7));
-    let discardPile = new Cards([deck.draw()]);
-    let currentSuit = discardPile.cards[0].suit;
-
-    document.addEventListener("DOMContentLoaded", () => {
-      startTimer();
-      renderGame();
-    });
-
-    const startTimer = () => {
-      timeLeft = 20;
-      document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
-      timer = setInterval(() => {
-        if (!paused) {
-          timeLeft--;
-          document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
-          if (timeLeft === 0) {
-            clearInterval(timer);
-            // If it's the player's turn and they did nothing, auto-draw, then switch to computer.
-            if (turn === "player") {
-              drawCard(true); // pass a param to indicate forced draw
-              turn = "computer";
-              renderGame();
-              setTimeout(computerPlay, 1000);
-            } else {
-              // Default skip logic for the computer if needed
-              if (skippedTurn) {
-                skippedTurn = false;
-                startTimer();
-              } else {
-                skippedTurn = true;
-                turn = "computer";
-                renderGame();
-                setTimeout(computerPlay, 1000);
-              }
-            }
-          }
-        }
-      }, 1000);
-    };
-
-    const resetTimer = () => {
-      clearInterval(timer);
-      skippedTurn = false;
-      startTimer();
-    };
-
-    const reshuffleDeck = () => {
-      if (deck.size() === 0 && discardPile.cards.length > 1) {
-        const newCards = discardPile.cards.slice(1);
-        discardPile.cards = [discardPile.cards[0]]; 
-        deck.cards = newCards;
-        deck.shuffle();
-      }
-    };
-
-    const renderGame = () => {
-      if (paused) return;
-
-      currentSuit = discardPile.cards[0].suit;
-      document.querySelector(".current-suit").textContent =
-        currentSuit.charAt(0).toUpperCase() + currentSuit.slice(1);
-      document.querySelector(".turn").textContent =
-        turn === "player" ? "Your Turn" : "Computer's Turn";
-
-      const discardCardEl = document.getElementById("discard-card");
-      discardCardEl.className = "discard-card card " + discardPile.cards[0].suit;
-      discardCardEl.innerHTML = `
-        <div class="card-value top-left">${discardPile.cards[0].value}</div>
-        <div class="card-suit">${discardPile.cards[0].getSuitSymbol()}</div>
-        <div class="card-value bottom-right">${discardPile.cards[0].value}</div>
-      `;
-
-      // Render player's hand
-      const playerHandEl = document.getElementById("player-hand");
-      playerHandEl.innerHTML = "";
-      playerHand.cards.forEach((card, index) => {
-        let cardEl = document.createElement("div");
-        cardEl.innerHTML = `
-          <div class="card-value top-left">${card.value}</div>
-          <div class="card-suit">${card.getSuitSymbol()}</div>
-          <div class="card-value bottom-right">${card.value}</div>
-        `;
-        cardEl.classList.add("card", card.suit);
-        cardEl.onclick = () => playCard(card, index);
-        playerHandEl.appendChild(cardEl);
-      });
-
-      // Render computer's hand as card backs
-      const computerHandEl = document.getElementById("computer-hand");
-      computerHandEl.innerHTML = computerHand.cards
-        .map(() => '<div class="computer-card"><img src="computer-card.jpg" /></div>')
-        .join("");
-
-      checkWinner();
-    };
-
-    const showErrorMessage = (message) => {
-      const errorDiv = document.getElementById("error-message");
-      errorDiv.textContent = message;
-      errorDiv.style.display = "block";
-      setTimeout(() => {
-        errorDiv.style.display = "none";
-      }, 2000);
-    };
-
-    const playCard = (card, index) => {
-      if (turn !== "player") return;
-      if (
-        card.suit === currentSuit ||
-        card.value === discardPile.cards[0].value ||
-        card.value === "8"
-      ) {
-        resetTimer();
-        playerHand.cards.splice(index, 1);
-        discardPile.cards.unshift(card);
-        if (card.value === "8") {
-          awaitingSuitSelection = true;
-          document.getElementById("suit-selection").style.display = "block";
-          renderGame();
-        } else {
-          currentSuit = card.suit;
-          turn = "computer";
-          renderGame();
-          setTimeout(computerPlay, 1000);
-        }
-      } else {
-        showErrorMessage("Invalid card select");
-      }
-    };
-
-    // Added an optional "forced" param so we know if the draw is automatic
-    const drawCard = (forced = false) => {
-      if (!forced && (paused || awaitingSuitSelection || turn !== "player")) return;
-      resetTimer();
-
-      reshuffleDeck();
-      if (deck.size() > 0) {
-        playerHand.add(deck.draw());
-        playerHand.sort();
-      }
-      // If forced, don't set turn to "computer" here, we handle that in the timer logic
-      if (!forced) {
-        turn = "computer";
-        renderGame();
-        setTimeout(computerPlay, 1000);
-      }
-    };
-
-    const computerPlay = () => {
-      let playableCard = computerHand.cards.find(
-        (c) =>
-          c.suit === currentSuit ||
-          c.value === discardPile.cards[0].value ||
-          c.value === "8"
-      );
-      if (playableCard) {
-        computerHand.cards = computerHand.cards.filter((c) => c !== playableCard);
-        discardPile.cards.unshift(playableCard);
-        if (playableCard.value === "8") {
-          let randomSuit = SUITS[Math.floor(Math.random() * SUITS.length)];
-          currentSuit = randomSuit;
-          discardPile.cards[0].suit = randomSuit;
-        } else {
-          currentSuit = playableCard.suit;
-        }
-      } else {
-        reshuffleDeck();
-        if (deck.size() > 0) {
-          computerHand.add(deck.draw());
-        }
-      }
-      turn = "player";
-      resetTimer();
-      renderGame();
-    };
-
-    const checkWinner = () => {
-      if (playerHand.cards.length === 0) {
-        window.location.href = "winner.html";
-      } else if (computerHand.cards.length === 0) {
-        window.location.href = "computer-win.html";
-      }
-    };
-
-    const togglePause = () => {
-      paused = !paused;
-      document.getElementById("pause-menu").style.display = paused ? "block" : "none";
-    };
-    const resumeGame = () => togglePause();
-    const startNewGame = () => location.reload();
-    function quitGame() {
-      window.location.href = "quit.html";
-    }
-
-    const selectSuit = (suit) => {
-      currentSuit = suit;
-      if (discardPile.cards[0].value === "8") {
-        discardPile.cards[0].suit = suit;
-      }
-      awaitingSuitSelection = false;
-      document.getElementById("suit-selection").style.display = "none";
-      turn = "computer";
-      renderGame();
-      setTimeout(computerPlay, 1000);
-    };
-  </script>
+    </script>
 </body>
 </html>
